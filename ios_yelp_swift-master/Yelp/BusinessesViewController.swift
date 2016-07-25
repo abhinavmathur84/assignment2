@@ -8,20 +8,24 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource,UITableViewDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate {
 
     var businesses: [Business]!
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.delegate = self
         tableView.dataSource = self
+        searchBar.delegate = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
+        searchBar.delegate = self
+        searchBar.sizeToFit()
 
         Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
@@ -46,6 +50,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource,UITableV
 */
     }
     
+        
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if businesses != nil {
             return businesses!.count

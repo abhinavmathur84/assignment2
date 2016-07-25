@@ -20,9 +20,14 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="140" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="LXj-P1-djU">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <searchBar key="tableHeaderView" contentMode="redraw" text="" id="I7B-MO-Ywq">
+                                    <rect key="frame" x="0.0" y="64" width="320" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <textInputTraits key="textInputTraits"/>
+                                </searchBar>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="BusinessCell" rowHeight="140" id="zWk-jX-bbb" customClass="BusinessCell" customModule="Yelp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="92" width="320" height="140"/>
+                                        <rect key="frame" x="0.0" y="136" width="320" height="140"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zWk-jX-bbb" id="rKj-Ie-wMG">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="139.5"/>
@@ -62,7 +67,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5nv-gj-hXe">
-                                                    <rect key="frame" x="8" y="9" width="65" height="65"/>
+                                                    <rect key="frame" x="8" y="15" width="65" height="65"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="65" id="FYH-2r-Fuj"/>
                                                         <constraint firstAttribute="height" constant="65" id="yqr-OP-zts"/>
@@ -106,7 +111,7 @@
                                                 <constraint firstItem="Gwb-HW-beJ" firstAttribute="top" secondItem="tdd-ur-BVs" secondAttribute="bottom" constant="8" id="pjR-N2-SEy"/>
                                                 <constraint firstItem="VrG-Ze-rPh" firstAttribute="top" secondItem="VHu-lm-KSw" secondAttribute="bottom" constant="7" id="qpR-7H-Ubb"/>
                                                 <constraint firstItem="VrG-Ze-rPh" firstAttribute="top" secondItem="Gwb-HW-beJ" secondAttribute="bottom" constant="8" id="rIR-A5-WQS"/>
-                                                <constraint firstItem="5nv-gj-hXe" firstAttribute="top" secondItem="rKj-Ie-wMG" secondAttribute="top" constant="9" id="vbz-yZ-svo"/>
+                                                <constraint firstItem="5nv-gj-hXe" firstAttribute="top" secondItem="rKj-Ie-wMG" secondAttribute="top" constant="15" id="vbz-yZ-svo"/>
                                                 <constraint firstItem="VHu-lm-KSw" firstAttribute="leading" secondItem="Gwb-HW-beJ" secondAttribute="trailing" constant="8" id="w7z-GO-8R8"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -133,6 +138,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Yelp" id="w1T-CM-v9R"/>
                     <connections>
+                        <outlet property="searchBar" destination="I7B-MO-Ywq" id="GnV-qa-ygE"/>
                         <outlet property="tableView" destination="LXj-P1-djU" id="TuP-EZ-fGF"/>
                     </connections>
                 </viewController>
