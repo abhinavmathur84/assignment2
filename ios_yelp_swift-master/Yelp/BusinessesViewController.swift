@@ -8,25 +8,28 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate, FiltersViewControllerDelegate {
 
     var businesses: [Business]!
     
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var searchBar: UISearchBar!
+    var searchBar:UISearchBar!
+    var searchText: String="Thai"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.delegate = self
         tableView.dataSource = self
-        searchBar.delegate = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
-        searchBar.delegate = self
+        searchBar = UISearchBar()
+        searchBar.delegate=self
         searchBar.sizeToFit()
-
+        navigationItem.titleView = searchBar
+        performSearchNow()
+       /*
         Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
@@ -36,7 +39,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource,UITableV
                 print(business.name!)
                 print(business.address!)
             }
-        })
+        })*/
 
 /* Example of Yelp search with more search options specified
         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
@@ -49,6 +52,28 @@ class BusinessesViewController: UIViewController, UITableViewDataSource,UITableV
         }
 */
     }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            if(text == "") {
+                searchText = "Thai"
+            } else {
+                searchText = text
+            }
+        } else {
+            searchText = "Thai"
+        }
+        performSearchNow()
+    }
+    
+    func performSearchNow() {
+        Business.searchWithTerm(searchText, completion: { (businesses: [Business]!, error: NSError!) -> Void in
+            self.businesses = businesses
+            self.tableView.reloadData()
+        })
+        
+    }
+    
     
         
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -71,14 +96,30 @@ class BusinessesViewController: UIViewController, UITableViewDataSource,UITableV
         // Dispose of any resources that can be recreated.
     }
 
-    /*
+   
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        let navigatiionController = segue.destinationViewController as! UINavigationController
+        let filtersViewController = navigatiionController.topViewController as! FiltersViewController
+        filtersViewController.delegate = self
     }
-    */
+    
+    
+    
+    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
+        var categories = filters["categories"] as? [String]
+
+        Business.searchWithTerm("Restaurants", sort: nil, categories:categories, deals: nil) {
+            (businesses:[Business]!, error:NSError!) -> Void in
+            self.businesses = businesses
+            self.tableView.reloadData()
+        }
+    }
+    
 
 }
