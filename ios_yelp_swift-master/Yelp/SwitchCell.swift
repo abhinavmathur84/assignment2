@@ -20,6 +20,13 @@ class SwitchCell: UITableViewCell {
     
     weak var delegate: SwitchCellDelegate?
     
+    var category : [String : String]!{
+        didSet{
+            switchLabel.text = category["name"]
+            
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         onSwitch.addTarget(self, action: "switchValueChanged", forControlEvents: UIControlEvents.ValueChanged)

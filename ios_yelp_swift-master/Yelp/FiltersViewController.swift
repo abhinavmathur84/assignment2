@@ -16,14 +16,27 @@ class FiltersViewController: UIViewController , UITableViewDataSource,UITableVie
 
     @IBOutlet weak var tableView: UITableView!
     var categories:[[String:String]]!
-    var switchStates = [Int:Bool] ()
+    var sorts: [[String:String]]!
+    var distances:[[String:String]]!
+    var deals: [[String:String]]!
+    var switchStates = [[Int:Bool]] ()
     weak var delegate: FiltersViewControllerDelegate?
+    
+    let HeaderViewIdentifier = "TableViewHeaderView"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        categories = yelpCategories()
+       
         tableView.delegate = self
         tableView.dataSource = self
+        
+        categories = yelpCategories()
+        sorts = yelpSorts()
+        distances = yelpDistances()
+        deals = yelpDeals()
+        switchStates = [[0:false],[1:false],[2:false],[3:false]]
+        
+         tableView.registerClass(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: HeaderViewIdentifier)
         
         // Do any additional setup after loading the view.
     }
@@ -35,20 +48,67 @@ class FiltersViewController: UIViewController , UITableViewDataSource,UITableVie
     
     
     @IBAction func onSearchButton(sender: AnyObject) {
+    
         dismissViewControllerAnimated(true, completion: nil)
-        var filters = [String:AnyObject]()
-        var selectedCategires = [String]()
-        for (row,isSelected) in switchStates {
-            if isSelected{
-                selectedCategires.append(categories[row]["code"]!)
+        var filters = [String : AnyObject]()
+        var count = 0 as Int
+        for(state) in switchStates{
+            var selectedCategories = [String]()
+            for (row, isSelected) in state{
+                if(isSelected){
+                    switch(count){
+                    case 0:
+                        selectedCategories.append(deals[row]["code"]!)
+                    case 1:
+                        selectedCategories.append(distances[row]["code"]!)
+                    case 2:
+                        selectedCategories.append(sorts[row]["code"]!)
+                    case 3:
+                        selectedCategories.append(categories[row]["code"]!)
+                    default:
+                        print("Error")
+                    }
+                }
             }
+            if(selectedCategories.count > 0){
+                switch(count){
+                case 0:
+                    filters["deals"] = selectedCategories
+                case 1:
+                    filters["distance"] = selectedCategories
+                case 2:
+                    print("sort in main \(selectedCategories)")
+                    filters["sort"] = selectedCategories
+                case 3:
+                    filters["categories"] = selectedCategories
+                default:
+                    print("Error")
+                }
+            }
+            count++
         }
-        
-        if selectedCategires.count > 0 {
-            filters["categories"] = selectedCategires
+
+      delegate?.filtersViewController(self, didUpdateFilters: filters)
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 4
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        switch(section){
+        case 0:
+            return 1;
+        case 1:
+            return distances.count
+        case 2:
+            return sorts.count
+        case 3:
+            return categories.count
+        default:
+            return 0;
         }
-        
-        delegate?.filtersViewController(self, didUpdateFilters: filters)
+        return 0
     }
     
     @IBAction func onCancelButton(sender: AnyObject) {
@@ -56,8 +116,62 @@ class FiltersViewController: UIViewController , UITableViewDataSource,UITableVie
 
     }
     
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
+        let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
+        switch(indexPath.section){
+        case 0:
+            cell.category = deals[indexPath.row]
+        case 1:
+            cell.category = distances[indexPath.row]
+        case 2:
+            cell.category = sorts[indexPath.row]
+        case 3:
+            cell.category = categories[indexPath.row]
+        default:
+            cell.switchLabel.text = "Error"
+        }
+        cell.delegate = self
+        if(switchStates.count>0 && switchStates[indexPath.section][indexPath.row] != nil){
+            cell.onSwitch.on = switchStates[indexPath.section][indexPath.row]!
+        }
+        else{
+            cell.onSwitch.on = false;
+        }
+        
+        return cell
+    }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier(HeaderViewIdentifier)! as UITableViewHeaderFooterView
+        switch(section){
+        case 0:
+            header.textLabel!.text = "Deals"
+        case 1:
+            header.textLabel!.text = "Distance"
+        case 2:
+            header.textLabel!.text = "Sort By"
+        case 3:
+            header.textLabel!.text = "Categories"
+        default:
+            header.textLabel!.text = "Error"
+        }
+        
+        return header
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
+    }
+    
+    func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
+        let indexPath = tableView.indexPathForCell(switchCell)!
+        switchStates[indexPath.section][indexPath.row] = value
+        print(switchStates)
+    }
+
+    
+    
+    /*func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categories.count
         
     }
@@ -77,8 +191,28 @@ class FiltersViewController: UIViewController , UITableViewDataSource,UITableVie
         
         switchStates[indexPath.row] = value
         
+    }*/
+    
+    func yelpDeals() -> [[String: String]] {
+        return [
+            ["name" : "Offering a Deal", "code": "1"]]
     }
     
+    func yelpDistances() -> [[String: String]] {
+        return [
+            ["name" : "Auto", "code": "0"],
+            ["name" : "0.3 miles", "code": "482"],
+            ["name" : "1 mile", "code": "1609"],
+            ["name" : "5 mile", "code": "8046"],
+            ["name" : "20 mile", "code": "32186"]]
+    }
+    
+    func yelpSorts() -> [[String: String]] {
+        return [
+            ["name" : "Best Match", "code": "0"],
+            ["name" : "Distance", "code": "1"],
+            ["name" : "Highest Rated", "code": "2"]]
+    }
     
     func yelpCategories() ->[[String:String]] {
         return [["name" : "Afghan", "code": "afghani"],
